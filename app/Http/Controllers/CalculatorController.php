@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Routing\Controller;
 
 enum Operation: string
 {
@@ -14,7 +13,6 @@ enum Operation: string
     case DIVIDE = 'divide';
     case MOD = 'mod';
 
-    // Человеческое название на русском
     public function label(): string
     {
         return match($this) {
@@ -26,7 +24,6 @@ enum Operation: string
         };
     }
 
-    // Символ операции
     public function symbol(): string
     {
         return match($this) {
@@ -38,7 +35,6 @@ enum Operation: string
         };
     }
 
-    // Выполнить вычисление
     public function calculate(float|int $a, float|int $b): float|int|string|null
     {
         return match($this) {
@@ -56,14 +52,13 @@ class CalculatorController extends Controller
     private const CACHE_KEY = 'calculator_history';
     private const MAX_HISTORY = 5;
 
-    // Страница калькулятора
     public function index()
     {
         $history = Cache::get(self::CACHE_KEY, []);
-        return view('calculator.index', compact('history'));
+        $result  = session('result'); // покажем результат после редиректа
+        return view('calculator.index', compact('history', 'result'));
     }
 
-    // Web-форма
     public function calculate(Request $request)
     {
         $request->validate([
@@ -72,11 +67,10 @@ class CalculatorController extends Controller
             'b' => 'required|numeric',
         ]);
 
-        $a = $request->input('a');
-        $b = $request->input('b');
+        $a = (float)$request->input('a');
+        $b = (float)$request->input('b');
         $operation = Operation::from($request->input('operation'));
 
-        // теперь вычисление делаем прямо через enum
         $result = $operation->calculate($a, $b);
 
         $history = Cache::get(self::CACHE_KEY, []);
@@ -88,17 +82,16 @@ class CalculatorController extends Controller
             'result' => $result,
             'time' => now()->format('H:i:s'),
         ];
-
         if (count($history) > self::MAX_HISTORY) {
             array_shift($history);
         }
-
         Cache::put(self::CACHE_KEY, $history, now()->addHours(24));
 
-        return redirect()->back()->with('history', $history)->with('result', $result);
+        // Важно: всегда возвращаемся на /calculator
+        return redirect()->route('calculator.index')->with('result', $result);
     }
 
-    // API
+    // Оставляю API, если пользуешься:
     public function apiCalculate(Request $request)
     {
         $request->validate([
@@ -107,10 +100,9 @@ class CalculatorController extends Controller
             'b' => 'required|numeric',
         ]);
 
-        $a = $request->input('a');
-        $b = $request->input('b');
+        $a = (float)$request->input('a');
+        $b = (float)$request->input('b');
         $operation = Operation::from($request->input('operation'));
-
         $result = $operation->calculate($a, $b);
 
         $history = Cache::get(self::CACHE_KEY, []);
@@ -122,16 +114,11 @@ class CalculatorController extends Controller
             'result' => $result,
             'time' => now()->format('H:i:s'),
         ];
-
         if (count($history) > self::MAX_HISTORY) {
             array_shift($history);
         }
-
         Cache::put(self::CACHE_KEY, $history, now()->addHours(24));
 
-        return response()->json([
-            'result' => $result,
-            'history' => $history,
-        ]);
+        return response()->json(['result' => $result, 'history' => $history]);
     }
 }

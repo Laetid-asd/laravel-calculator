@@ -2,22 +2,25 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Laravel Calculator</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>@yield('title', 'Laravel App')</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-light">
-<nav class="navbar navbar-dark bg-dark mb-4">
-    <div class="container">
-        <a class="navbar-brand" href="{{ route('calculator.index') }}">Laravel Calculator</a>
-    </div>
-</nav>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex flex-col">
 
-<main>
+<header class="bg-gray-800 text-white">
+    <nav class="container mx-auto px-4 py-3 flex gap-6">
+        <a href="{{ route('calculator.index') }}" class="hover:underline">🧮 Калькулятор</a>
+        <a href="{{ route('todo.index') }}" class="hover:underline">✅ ToDo List</a>
+    </nav>
+</header>
+
+<main class="container mx-auto px-4 py-6 flex-1">
     @yield('content')
 </main>
 
-<footer class="text-center mt-4 mb-3 text-muted">
-    <small>© {{ date('Y') }} Laravel Calculator</small>
+<footer class="bg-gray-900 text-gray-300 text-sm text-center py-3">
+    Demo • {{ date('Y') }}
 </footer>
 </body>
 </html>
