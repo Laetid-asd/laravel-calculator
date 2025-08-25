@@ -15,7 +15,7 @@ enum Operation: string
 
     public function label(): string
     {
-        return match($this) {
+        return match ($this) {
             self::ADD => 'Сложение',
             self::SUBTRACT => 'Вычитание',
             self::MULTIPLY => 'Умножение',
@@ -26,7 +26,7 @@ enum Operation: string
 
     public function symbol(): string
     {
-        return match($this) {
+        return match ($this) {
             self::ADD => '+',
             self::SUBTRACT => '-',
             self::MULTIPLY => '×',
@@ -37,7 +37,7 @@ enum Operation: string
 
     public function calculate(float|int $a, float|int $b): float|int|string|null
     {
-        return match($this) {
+        return match ($this) {
             self::ADD => $a + $b,
             self::SUBTRACT => $a - $b,
             self::MULTIPLY => $a * $b,
@@ -52,21 +52,25 @@ class CalculatorController extends Controller
     private const CACHE_KEY = 'calculator_history';
     private const MAX_HISTORY = 5;
 
+    //TODO: У функций указывай тип который должен вернуться
     public function index()
     {
         $history = Cache::get(self::CACHE_KEY, []);
-        $result  = session('result'); // покажем результат после редиректа
+        $result = session('result'); // покажем результат после редиректа
         return view('calculator.index', compact('history', 'result'));
     }
 
     public function calculate(Request $request)
     {
+        //TODO: Что такое Request и нахуй он нужен
+        // TODO: вынеси в отдельный FormRequest
         $request->validate([
             'operation' => 'required|string|in:add,subtract,multiply,divide,mod',
-            'a' => 'required|numeric',
-            'b' => 'required|numeric',
+            'a'         => 'required|numeric',
+            'b'         => 'required|numeric',
         ]);
 
+        // TODO: ограничь до размеров integer
         $a = (float)$request->input('a');
         $b = (float)$request->input('b');
         $operation = Operation::from($request->input('operation'));
@@ -75,12 +79,12 @@ class CalculatorController extends Controller
 
         $history = Cache::get(self::CACHE_KEY, []);
         $history[] = [
-            'a' => $a,
-            'b' => $b,
+            'a'         => $a,
+            'b'         => $b,
             'operation' => $operation->label(),
-            'symbol' => $operation->symbol(),
-            'result' => $result,
-            'time' => now()->format('H:i:s'),
+            'symbol'    => $operation->symbol(),
+            'result'    => $result,
+            'time'      => now()->format('H:i:s'),
         ];
         if (count($history) > self::MAX_HISTORY) {
             array_shift($history);
@@ -91,13 +95,14 @@ class CalculatorController extends Controller
         return redirect()->route('calculator.index')->with('result', $result);
     }
 
-    // Оставляю API, если пользуешься:
+    //TODO: определись баран
     public function apiCalculate(Request $request)
     {
+        //TODO: FormRequest
         $request->validate([
             'operation' => 'required|string|in:add,subtract,multiply,divide,mod',
-            'a' => 'required|numeric',
-            'b' => 'required|numeric',
+            'a'         => 'required|numeric',
+            'b'         => 'required|numeric',
         ]);
 
         $a = (float)$request->input('a');
@@ -107,12 +112,12 @@ class CalculatorController extends Controller
 
         $history = Cache::get(self::CACHE_KEY, []);
         $history[] = [
-            'a' => $a,
-            'b' => $b,
+            'a'         => $a,
+            'b'         => $b,
             'operation' => $operation->label(),
-            'symbol' => $operation->symbol(),
-            'result' => $result,
-            'time' => now()->format('H:i:s'),
+            'symbol'    => $operation->symbol(),
+            'result'    => $result,
+            'time'      => now()->format('H:i:s'),
         ];
         if (count($history) > self::MAX_HISTORY) {
             array_shift($history);

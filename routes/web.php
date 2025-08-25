@@ -5,9 +5,11 @@ use App\Http\Controllers\CalculatorController;
 use App\Http\Controllers\TodoListController;
 
 Route::get('/calculator', [CalculatorController::class, 'index'])->name('calculator.index');
+//TODO: должно быть в api.php
 Route::post('/calculator/calculate', [CalculatorController::class, 'calculate'])->name('calculator.calculate');
 
 Route::get('/todo-list', [TodoListController::class, 'index'])->name('todo.index');
+//TODO: должно быть в api.php
 Route::post('/todo-list/store', [TodoListController::class, 'store'])->name('todo.store');
 Route::post('/todo-list/update/{id}', [TodoListController::class, 'update'])->name('todo.update');
 Route::post('/todo-list/complete/{id}', [TodoListController::class, 'complete'])->name('todo.complete');

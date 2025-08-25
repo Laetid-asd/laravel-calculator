@@ -7,6 +7,7 @@ use App\Http\Controllers\TodoListController;
 // API для калькулятора
 Route::post('/calculator/calculate', [CalculatorController::class, 'apiCalculate']);
 
+//TODO: определись баран
 // API для ToDo
 Route::get('/todo', [TodoListController::class, 'apiIndex']);
 Route::post('/todo', [TodoListController::class, 'apiStore']);
